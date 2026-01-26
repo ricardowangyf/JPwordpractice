@@ -27,9 +27,15 @@ jobs:
       - name: Build project
         run: npm run build
 
+      # 禁用 Jekyll
       - name: Disable Jekyll
         run: touch dist/.nojekyll
 
+      # 处理 history 模式
+      - name: Copy index.html to 404.html
+        run: cp dist/index.html dist/404.html
+
+      # 部署
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
