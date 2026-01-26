@@ -1,28 +1,41 @@
-name: CI
+name: CI & Deploy Vue 2 Project
+
 on:
   push:
     branches:
-      - master
+      - main  # 触发部署的分支
+
+permissions:
+  contents: write  # 确保 Actions 有推送权限
 
 jobs:
-  build-deploy:
-    # runs-on: ubuntu-18.04
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      # 1️⃣ 拉取代码
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ 安装 Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: '16'  # Vue 2 推荐 Node 14~16
 
-      - run: npm install
-      - run: npm run build
+      # 3️⃣ 安装依赖
+      - name: Install dependencies
+        run: npm install
 
-      - name: Deploy
+      # 4️⃣ 构建项目
+      - name: Build project
+        run: npm run build
+
+      # 5️⃣ 部署到 gh-pages
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          commit_message: ' ${{ github.event.head_commit.message }}'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          user_name: github-actions[bot]
-          user_email: github-actions[bot]@users.noreply.github.com
+          personal_token: ${{ secrets.GH_PAT }}  # 使用你的 PAT
+          publish_dir: ./dist                     # Vue CLI 构建输出目录
+          destination_branch: gh-pages
+          commit_message: "Deploy Vue 2 project via GitHub Actions"
