@@ -3,7 +3,7 @@ name: Build & Deploy Vue 2 Project
 on:
   push:
     branches:
-      - main
+      - main  # 触发部署的分支
 
 permissions:
   contents: write
@@ -13,33 +13,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ 拉取仓库
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2️⃣ 设置 Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
+      # 3️⃣ 安装依赖
       - name: Install dependencies
         run: npm install
 
+      # 4️⃣ 构建 Vue 项目
       - name: Build project
         run: npm run build
 
-      # 禁用 Jekyll
+      # 5️⃣ 禁用 Jekyll（防止 GitHub Pages 处理 README.md）
       - name: Disable Jekyll
         run: touch dist/.nojekyll
 
-      # 处理 history 模式
+      # 6️⃣ 删除 dist 下可能存在的 README.md
+      - name: Remove README.md if exists
+        run: rm -f dist/README.md
+
+      # 7️⃣ SPA history 模式兼容，404.html 指向 index.html
       - name: Copy index.html to 404.html
         run: cp dist/index.html dist/404.html
 
-      # 部署
+      # 8️⃣ 部署到 gh-pages 分支
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          personal_token: ${{ secrets.GH_PAT }}
+          personal_token: ${{ secrets.GH_PAT }} # 你之前创建的 PAT
           publish_dir: ./dist
           destination_branch: gh-pages
           commit_message: "Deploy Vue 2 project via GitHub Actions"
