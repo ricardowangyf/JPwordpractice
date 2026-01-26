@@ -1,45 +1,39 @@
-name: CI & Deploy Vue 2 Project
+name: Build & Deploy Vue 2 Project
 
 on:
   push:
     branches:
-      - main  # 触发部署的分支，可改为你的主分支
+      - main
 
 permissions:
-  contents: write  # 确保 GitHub Actions 可以推送 gh-pages
+  contents: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout 仓库
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Vue 2 推荐 Node 14~16
+          node-version: '16'
 
-      # 3️⃣ 安装依赖
       - name: Install dependencies
         run: npm install
 
-      # 4️⃣ 构建项目
       - name: Build project
         run: npm run build
 
-      # 5️⃣ 添加 .nojekyll 禁用 Jekyll
       - name: Disable Jekyll
         run: touch dist/.nojekyll
 
-      # 6️⃣ 部署到 gh-pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          personal_token: ${{ secrets.GH_PAT }}  # 使用你创建的 PAT
-          publish_dir: ./dist                     # Vue CLI 构建输出目录
+          personal_token: ${{ secrets.GH_PAT }}
+          publish_dir: ./dist
           destination_branch: gh-pages
           commit_message: "Deploy Vue 2 project via GitHub Actions"
