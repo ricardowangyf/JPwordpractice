@@ -1,27 +1,24 @@
-name: Build & Deploy Vue 2 Project
+name: Build and Deploy Vue Project to GitHub Pages
 
 on:
   push:
     branches:
-      - main
-
-permissions:
-  contents: write
+      - main  # 主分支名，如你是 master，请改成 master
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ 拉取仓库
+      # 1️⃣ 检出仓库
       - name: Checkout repository
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3
 
-      # 2️⃣ 设置 Node.js
+      # 2️⃣ 设置 Node.js 环境
       - name: Setup Node.js
-        uses: actions/setup-node@v3.10.0
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'  # 或你项目需要的版本
 
       # 3️⃣ 安装依赖
       - name: Install dependencies
@@ -31,23 +28,17 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # 5️⃣ 禁用 Jekyll
-      - name: Disable Jekyll
-        run: touch dist/.nojekyll
+      # 5️⃣ 清理不需要的文件（可选）
+      # 确保 log 文件夹和根目录 md 不被部署
+      - name: Clean unnecessary files
+        run: |
+          rm -rf dist/log
+          find dist -name "*.md" -type f -delete || true
 
-      # 6️⃣ 删除 dist 下可能存在的 README.md
-      - name: Remove README.md if exists
-        run: rm -f dist/README.md
-
-      # 7️⃣ SPA history 模式兼容
-      - name: Copy index.html to 404.html
-        run: cp dist/index.html dist/404.html
-
-      # 8️⃣ 部署到 gh-pages 分支
+      # 6️⃣ 部署到 GitHub Pages
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3.12.0
+        uses: peaceiris/actions-gh-pages@v6
         with:
-          personal_token: ${{ secrets.GH_PAT }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          destination_branch: gh-pages
-          commit_message: "Deploy Vue 2 project via GitHub Actions"
+          keep_files: false  # 每次清空 gh-pages 分支，保证干净部署
