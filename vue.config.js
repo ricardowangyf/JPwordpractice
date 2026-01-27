@@ -1,9 +1,4 @@
-// Vue CLI
+// ✅ vue.config.js (Vue CLI)
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production' ? '/JPwordpractice/' : '/'
+  publicPath: process.env.NODE_ENV === 'production' ? '/vuejpexample/' : '/'
 }
-
-// Vite
-export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/JPwordpractice/' : '/'
-})
