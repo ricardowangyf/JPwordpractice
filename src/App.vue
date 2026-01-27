@@ -1,15 +1,16 @@
 <template>
   <div id="app">
-    <TrainerProfile />
+    <JpTrainer />
   </div>
 </template>
 
 <script>
-import TrainerProfile from './components/TrainerProfile.vue'
+import JpTrainer from './components/JpTrainer.vue'
 
 export default {
+  name: 'App',
   components: {
-    TrainerProfile
+    JpTrainer
   }
 }
 </script>
