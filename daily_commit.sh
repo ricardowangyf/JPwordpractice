@@ -19,3 +19,6 @@ echo "\`\`\`" >> $FILE
 git add .
 git commit -m "daily jp study log $DATE"
 git push origin master
+
+echo "## $DATE 日语学习记录" >> README.md
+echo "- 记录文件：[log/$DATE.md](log/$DATE.md)" >> README.md
