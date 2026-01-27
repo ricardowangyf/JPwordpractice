@@ -18,3 +18,4 @@ echo "\`\`\`" >> $FILE
 
 git add .
 git commit -m "daily jp study log $DATE"
+git push origin master
