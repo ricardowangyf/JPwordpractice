@@ -3,7 +3,15 @@ export default [
       id: 1,
       type: 'word',
       question: '勉強（べんきょう）',
-      answer: '学习'
+      answer: '学习',
+    
+    },
+    {
+      id: 1,
+      type: 'word',
+      question: '休みです',
+      answer: '休息',
+    
     },
     {
       id: 2,
