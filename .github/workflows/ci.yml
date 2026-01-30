@@ -1,9 +1,12 @@
-name: Build and Deploy Vue Project to GitHub Pages
+name: Build & Deploy Vue Project
 
 on:
   push:
     branches:
-      - main  # 主分支名，如你是 master，请改成 master
+      - main
+
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
@@ -14,31 +17,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ 设置 Node.js 环境
+      # 2️⃣ 设置 Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # 或你项目需要的版本
+          node-version: '20'
 
       # 3️⃣ 安装依赖
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       # 4️⃣ 构建 Vue 项目
-      - name: Build project
+      - name: Build Vue project
         run: npm run build
 
-      # 5️⃣ 清理不需要的文件（可选）
-      # 确保 log 文件夹和根目录 md 不被部署
-      - name: Clean unnecessary files
-        run: |
-          rm -rf dist/log
-          find dist -name "*.md" -type f -delete || true
-
-      # 6️⃣ 部署到 GitHub Pages
+      # 5️⃣ 部署到 GitHub Pages（保留 gh-pages 其他文件，忽略 log 文件夹）
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v6
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          keep_files: false  # 每次清空 gh-pages 分支，保证干净部署
+          # 排除 log 文件夹
+          exclude_assets: log/** 
+          # 保留 gh-pages 上其他文件
+          keep_files: true
+          user_name: github-actions
+          user_email: github-actions@github.com
