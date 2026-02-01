@@ -1,70 +1,63 @@
 #!/bin/bash
-set -e
+set -euo pipefail  # 出错停止，未定义变量报错，管道出错也停止
 
-# ---------------- 配置 ----------------
+# ---------------- 参数支持 ----------------
+CUSTOM_COMMIT_MSG=${1:-""}
+
+# ---------------- 基本配置 ----------------
 DATE=$(date +"%Y-%m-%d")
-# 脚本所在目录
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-PROJECT_DIR="$SCRIPT_DIR/.."
-LOG_DIR="$PROJECT_DIR/log"
-README="$PROJECT_DIR/README.md"
-BRANCH="master"   # 根据你的仓库实际分支改成 master 或 main
-FILE="$LOG_DIR/$DATE.md"
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)   # 脚本所在目录
+PROJECT_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)  # 项目根目录
 
+LOG_DIR="$PROJECT_ROOT/log"
+FILE="$LOG_DIR/$DATE.md"
+README="$PROJECT_ROOT/README.md"
+
+# 获取当前分支
+CURRENT_BRANCH=$(git -C "$PROJECT_ROOT" rev-parse --abbrev-ref HEAD || echo "master")
+
+# 如果用户没自定义 commit message，使用默认
+GIT_COMMIT_MSG=${CUSTOM_COMMIT_MSG:-"Add daily log for $DATE"}
+
+# ---------------- 创建日志目录 ----------------
 mkdir -p "$LOG_DIR"
 
-# ---------------- 生成当天日志 ----------------
-echo "# 📅 $DATE 日语学习记录" > "$FILE"
-echo "" >> "$FILE"
-echo "```json" >> "$FILE"
-
-# 只在本地 Mac 才用 pbpaste，否则输出空对象
-if command -v pbpaste >/dev/null 2>&1; then
-  pbpaste >> "$FILE"
+# ---------------- 创建或追加日志 ----------------
+if [ ! -f "$FILE" ]; then
+    echo "# Daily Log - $DATE" > "$FILE"
+    echo "" >> "$FILE"
+    echo "- 今日任务：" >> "$FILE"
+    echo "- 今日总结：" >> "$FILE"
+    echo "✅ 日志文件已创建：$FILE"
 else
-  echo "{}" >> "$FILE"
+    echo "" >> "$FILE"
+    echo "## 新增记录 $(date +"%H:%M")" >> "$FILE"
+    echo "- 今日任务：" >> "$FILE"
+    echo "- 今日总结：" >> "$FILE"
+    echo "📝 日志文件已存在，追加新条目：$FILE"
 fi
 
-echo "```" >> "$FILE"
-
-# ---------------- 更新 README ----------------
-TMP=$(mktemp)
-echo "# 日语学习日志" > "$TMP"
-echo "" >> "$TMP"
-echo "## 日志列表（最新在上）" >> "$TMP"
-echo "" >> "$TMP"
-
-for f in $(ls -1t "$LOG_DIR"); do
-  name=$(basename "$f" .md)
-  echo "- [$name 日语学习记录](./log/$f)" >> "$TMP"
-done
-
-mv "$TMP" "$README"
-
-# ---------------- Git 提交 ----------------
-cd "$PROJECT_DIR"
-
-# 确保分支存在
-if git show-ref --verify --quiet refs/heads/$BRANCH; then
-  git checkout $BRANCH
-else
-  git checkout -b $BRANCH
+# ---------------- 更新 README.md ----------------
+if [ -f "$README" ]; then
+    if ! grep -q "$DATE" "$README"; then
+        echo "- [$DATE]($LOG_DIR/$DATE.md)" >> "$README"
+        echo "✅ README.md 已更新"
+    fi
 fi
 
-git add "$LOG_DIR" "$README"
-
-# commit 信息：命令行参数优先，否则用默认
-if [ $# -gt 0 ]; then
-  COMMIT_MSG="$*"
+# ---------------- Git 操作 ----------------
+if git -C "$PROJECT_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    git -C "$PROJECT_ROOT" add "$FILE"
+    [ -f "$README" ] && git -C "$PROJECT_ROOT" add "$README"
+    
+    # 只有有变化时才 commit
+    if ! git -C "$PROJECT_ROOT" diff --cached --quiet; then
+        git -C "$PROJECT_ROOT" commit -m "$GIT_COMMIT_MSG"
+        git -C "$PROJECT_ROOT" push origin "$CURRENT_BRANCH"
+        echo "✅ 日志已提交并推送到 $CURRENT_BRANCH"
+    else
+        echo "⚠️ 没有新的更改需要提交"
+    fi
 else
-  COMMIT_MSG="daily jp study log $DATE"
-fi
-
-# 检查是否有变动
-if git diff --cached --quiet; then
-  echo "📭 今天没有新内容"
-else
-  git commit -m "$COMMIT_MSG"
-  git push origin $BRANCH
-  echo "✅ 日志已提交到 $BRANCH"
+    echo "❌ 当前目录不是 Git 仓库，跳过提交"
 fi
