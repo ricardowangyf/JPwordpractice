@@ -168,10 +168,64 @@ export default [
     question: 'けさ',
     answer: '今天早上',
   },
-  // {
-  //   id: 4,
-  //   type: 'sentence',
-  //   question: '何のために日本に来ましたか。',
-  //   answer: '日本で語学学校に通うためです。'
-  // }
+  {
+    id: 28,
+    type: 'word',
+    question: 'くる',
+    answer: '来',
+  },
+  {
+    id: 29,
+    type: 'word',
+    question: 'かえる',
+    answer: '回家',
+  },
+  {
+    id: 30,
+    type: 'word',
+    question: 'ねる',
+    answer: '睡觉',
+  },
+  {
+    id: 31,
+    type: 'word',
+    question: 'おきる',
+    answer: '起床',
+  },
+  {
+    id: 32,
+    type: 'word',
+    question: 'かう',
+    answer: '买',
+  },
+  {
+    id: 33,
+    type: 'word',
+    question: 'うる',
+    answer: '卖'
+  },
+  {
+    id: 34,
+    type: 'word',
+    question: 'ある',
+    answer: '无生命的有'
+  },
+  {
+    id: 35,
+    type: 'word',
+    question: 'いる',
+    answer: '有生命的有'
+  },
+  {
+    id: 36,
+    type: 'word',
+    question: 'あちう',
+    answer: '洗'
+  },
+  {
+    id: 37,
+    type: 'word',
+    question: 'べんきょうする',
+    answer: '学习'
+  },
 ]

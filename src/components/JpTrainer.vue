@@ -14,7 +14,7 @@
     <input v-model="input" placeholder="输入你的回答" @keyup.enter="check" />
     <p v-if="result === 'correct'" class="ok">✔️ 正确</p>
     <p v-if="result === 'wrong'" class="err">
-      ❌ 错误，正确答案：{{ current.answer }}
+      ❌ 错误，正确答案：{{ current.answer }}111
     </p>
 
     <button @click="next">跳过</button>
