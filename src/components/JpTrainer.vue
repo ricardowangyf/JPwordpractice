@@ -17,7 +17,7 @@
       ❌ 错误，正确答案：{{ current.answer }}111
     </p>
 
-    <button @click="next">跳过</button>
+    <button @click="next">跳过</button>aaaa
   </div>
 </template>
 
