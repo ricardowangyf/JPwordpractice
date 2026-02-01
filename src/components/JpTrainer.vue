@@ -26,7 +26,7 @@ import questions from '@/data/jpTrainer'
 
 
 export default {
-  name: 'TrainerProfile',
+  name: 'jpTrainer',
   data() {
     return {
       result: null, // 'correct' | 'wrong'
