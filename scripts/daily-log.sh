@@ -15,7 +15,7 @@ FILE="$LOG_DIR/$DATE.md"
 README="$PROJECT_ROOT/README.md"
 
 # 固定分支 main
-CURRENT_BRANCH="main"
+CURRENT_BRANCH="master"
 
 GIT_COMMIT_MSG=${CUSTOM_COMMIT_MSG:-"Daily log for $DATE"}
 
