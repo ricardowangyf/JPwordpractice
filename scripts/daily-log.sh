@@ -6,6 +6,7 @@ CUSTOM_COMMIT_MSG=${1:-""}
 
 # ---------------- 基本配置 ----------------
 DATE=$(date +"%Y-%m-%d")
+TIME=$(date +"%H:%M")
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)   # 脚本所在目录
 PROJECT_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)  # 项目根目录
 
@@ -24,21 +25,26 @@ mkdir -p "$LOG_DIR"
 
 # ---------------- 创建或追加日志 ----------------
 if [ ! -f "$FILE" ]; then
-    echo "# Daily Log - $DATE" > "$FILE"
-    echo "" >> "$FILE"
-    echo "- 今日任务：" >> "$FILE"
-    echo "- 今日总结：" >> "$FILE"
+    cat > "$FILE" <<EOF
+# Daily Log - $DATE
+
+- 今日任务：
+- 今日总结：
+EOF
     echo "✅ 日志文件已创建：$FILE"
 else
-    echo "" >> "$FILE"
-    echo "## 新增记录 $(date +"%H:%M")" >> "$FILE"
-    echo "- 今日任务：" >> "$FILE"
-    echo "- 今日总结：" >> "$FILE"
+    cat >> "$FILE" <<EOF
+
+## 新增记录 $TIME
+- 今日任务：
+- 今日总结：
+EOF
     echo "📝 日志文件已存在，追加新条目：$FILE"
 fi
 
 # ---------------- 更新 README.md ----------------
 if [ -f "$README" ]; then
+    # 避免重复添加
     if ! grep -q "$DATE" "$README"; then
         echo "- [$DATE]($LOG_DIR/$DATE.md)" >> "$README"
         echo "✅ README.md 已更新"
@@ -47,9 +53,9 @@ fi
 
 # ---------------- Git 操作 ----------------
 if git -C "$PROJECT_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    git -C "$PROJECT_ROOT" add "$FILE"
-    [ -f "$README" ] && git -C "$PROJECT_ROOT" add "$README"
-    
+    # 确保所有更改都被追踪，包括删除文件
+    git -C "$PROJECT_ROOT" add -A
+
     # 只有有变化时才 commit
     if ! git -C "$PROJECT_ROOT" diff --cached --quiet; then
         git -C "$PROJECT_ROOT" commit -m "$GIT_COMMIT_MSG"
