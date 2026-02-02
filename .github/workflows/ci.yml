@@ -3,7 +3,7 @@ name: Build & Deploy Vue Project
 on:
   push:
     branches:
-      - main  # 监听 main 分支
+      - master  # 监听 main 分支
     # paths-ignore: ["log/**"]  # 如果你想日志不触发部署可以打开此行
 
 jobs:

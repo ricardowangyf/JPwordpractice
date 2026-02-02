@@ -19,36 +19,6 @@ CURRENT_BRANCH="master"
 
 GIT_COMMIT_MSG=${CUSTOM_COMMIT_MSG:-"Daily log for $DATE"}
 
-# # ---------------- 创建日志目录 ----------------
-# mkdir -p "$LOG_DIR"
-
-# # ---------------- 创建或追加日志 ----------------
-# if [ ! -f "$FILE" ]; then
-#     cat > "$FILE" <<EOF
-# # Daily Log - $DATE
-
-# - 今日任务：
-# - 今日总结：
-# EOF
-#     echo "✅ 日志文件已创建：$FILE"
-# else
-#     cat >> "$FILE" <<EOF
-
-# ## 新增记录 $TIME
-# - 今日任务：
-# - 今日总结：
-# EOF
-#     echo "📝 日志文件已存在，追加新条目：$FILE"
-# fi
-
-# # ---------------- 更新 README ----------------
-# if [ -f "$README" ]; then
-#     if ! grep -q "$DATE" "$README"; then
-#         echo "- [$DATE]($LOG_DIR/$DATE.md)" >> "$README"
-#         echo "✅ README.md 已更新"
-#     fi
-# fi
-
 # ---------------- Git 操作 ----------------
 if git -C "$PROJECT_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     git -C "$PROJECT_ROOT" add -A
