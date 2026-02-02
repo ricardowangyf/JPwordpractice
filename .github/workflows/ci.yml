@@ -1,41 +1,33 @@
-name: Build & Deploy Vue Project
+name: Deploy GitHub Pages (master)
 
 on:
   push:
     branches:
-      - main   # ⚠️ 确认你仓库默认分支
+      - master
 
 permissions:
-  contents: write   # ✅ 没它一定 128
+  contents: write
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # 1️⃣ 拉取仓库
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      # 2️⃣ 安装 Node.js
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      # 3️⃣ 安装依赖
-      - name: Install dependencies
-        run: npm install
+      - name: Install deps
+        run: npm ci
 
-      # 4️⃣ 构建项目
-      - name: Build project
+      - name: Build
         run: npm run build
 
-      # 5️⃣ 部署到 GitHub Pages
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: dist
