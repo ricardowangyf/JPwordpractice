@@ -228,4 +228,10 @@ export default [
     question: 'べんきょうする',
     answer: '学习'
   },
+  {
+    id: 38,
+    type: 'word',
+    question: '朝',
+    answer: '早上'
+  },
 ]
