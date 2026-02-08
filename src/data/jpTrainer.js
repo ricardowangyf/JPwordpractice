@@ -234,4 +234,35 @@ export default [
     question: '朝',
     answer: '早上'
   },
+  {
+    id: 39,
+    type: 'word',
+    question: '踊る',
+    answer: '跳舞'
+  },
+  {
+    id: 40,
+    type: 'word',
+    question: '枯れる',
+    answer: '跳舞'
+  },
+  {
+    id: 41,
+    type: 'word',
+    question: '考える',
+    answer: '思考'
+  },
+  {
+    id: 42,
+    type: 'word',
+    question: '聞こえる',
+    answer: '思考'
+  },
+  {
+    id: 43,
+    type: 'word',
+    question: '決まる',
+    answer: '决定'
+  },
+  
 ]
