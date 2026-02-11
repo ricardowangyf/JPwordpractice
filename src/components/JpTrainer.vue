@@ -8,7 +8,7 @@
     <p v-if="result === 'wrong'" class="err">
       ❌ 错误，正确答案：{{ current.answer }}
     </p>
-    <button @click="skip">跳过</button>
+    <button @click="skip">跳过1</button>
   </div>
 </template>
 
