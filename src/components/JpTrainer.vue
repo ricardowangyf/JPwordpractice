@@ -4,11 +4,11 @@
     <p class="question">{{ current.question }}</p>
     <p class="timer">⏱ 剩余 {{ timeLeft }} 秒</p>
     <input v-model="input" placeholder="输入你的回答" @keyup.enter="check" />
-    <p v-if="result === 'correct'" class="ok">✔️ 正确</p>
+    <!-- <p v-if="result === 'correct'" class="ok">✔️ 正确</p> -->
     <p v-if="result === 'wrong'" class="err">
       ❌ 错误，正确答案：{{ current.answer }}
     </p>
-    <button @click="skip">跳过1</button>
+    <button @click="skip" :disabled="!input.trim()">正确</button>
   </div>
 </template>
 
@@ -37,7 +37,11 @@ export default {
   mounted() {
     const saved = localStorage.getItem('jp-daily-records')
     if (saved) {
-      this.records = JSON.parse(saved)
+      try {
+        this.records = JSON.parse(saved)
+      } catch (e) {
+        this.records = []
+      }
     }
     this.startTimer()
   },
@@ -45,21 +49,23 @@ export default {
     if (this.timer) clearInterval(this.timer)
   },
   methods: {
-    // 启动倒计时
+    // 启动倒计时（超时不再自动换题，只将当前题标为错误）
     startTimer() {
       if (this.timer) clearInterval(this.timer)
       this.timer = setInterval(() => {
         this.timeLeft--
         if (this.timeLeft <= 0) {
-          this.next(false) // 自动跳题
+          // 标记为错误但不自动换题，避免页面自动变化
+          this.result = 'wrong'
+          if (!this.wrongList.includes(this.index)) this.wrongList.push(this.index)
+          this.timeLeft = 10
         }
       }, 1000)
     },
 
     // manual = true 表示用户点击跳过或手动下一题
-    // manual = false 表示倒计时自动跳题
+    // manual = false 表示程序触发的下一题
     next(manual = true) {
-      // 清除旧倒计时
       if (this.timer) clearInterval(this.timer)
       this.timer = null
 
@@ -69,10 +75,8 @@ export default {
       this.result = null
 
       if (manual) {
-        // 用户点击跳过或手动下一题，直接下一题
         this.index = (this.index + 1) % this.list.length
       } else {
-        // 自动跳题时，优先抽错题，否则顺序
         if (this.wrongList.length && Math.random() < 0.5) {
           this.index = this.wrongList.shift()
         } else {
@@ -80,36 +84,36 @@ export default {
         }
       }
 
-      // 重启倒计时
       this.startTimer()
     },
 
-    // 点击跳过按钮
-    // skip() {
-    //   this.next(true)
-    // },
-    // 点击跳过按钮
+    // 跳过按钮：仅在有输入时可点击。若当前已显示正确，直接下一题；否则先校验，答案正确时跳题
     skip() {
-      this.next(true)
+      if (!this.input.trim()) return
+      if (this.result === 'correct') {
+        this.next(true)
+        return
+      }
+      this.check(true)
     },
 
-    // 检查答案
-    check() {
+    // 检查答案，autoNext 表示是否在答对后自动跳题（skip 调用会传 true）
+    check(autoNext = false) {
       if (this.timer) clearInterval(this.timer)
       this.timer = null
 
       const userAnswer = this.input.trim().toLowerCase()
-      const correctAnswer = this.current.answer.trim().toLowerCase()
+      const correctAnswer = (this.current && this.current.answer ? this.current.answer : '').trim().toLowerCase()
       const isCorrect = userAnswer === correctAnswer
 
       this.result = isCorrect ? 'correct' : 'wrong'
 
-      if (!isCorrect) this.wrongList.push(this.index)
+      if (!isCorrect && !this.wrongList.includes(this.index)) this.wrongList.push(this.index)
 
       // 保存学习记录
       this.records.push({
-        question: this.current.question,
-        answer: this.current.answer,
+        question: this.current ? this.current.question : '',
+        answer: this.current ? this.current.answer : '',
         input: this.input,
         correct: isCorrect,
         time: new Date().toLocaleTimeString()
@@ -117,7 +121,16 @@ export default {
 
       localStorage.setItem('jp-daily-records', JSON.stringify(this.records))
 
-      // ✅ 不再用 setTimeout 自动跳题，倒计时 timer 会处理
+      if (autoNext) {
+        if (isCorrect) {
+          this.next(true)
+        } else {
+          this.startTimer()
+        }
+      } else {
+        // 手动检查后不自动换题，重启倒计时
+        this.startTimer()
+      }
     }
   }
 }
