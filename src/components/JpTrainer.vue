@@ -63,7 +63,6 @@ export default {
       }, 1000)
     },
 
-    // manual = true 表示用户点击跳过或手动下一题
     // manual = false 表示程序触发的下一题
     next(manual = true) {
       if (this.timer) clearInterval(this.timer)
