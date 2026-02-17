@@ -3,12 +3,13 @@
     <h2>🇯🇵 日语抽练</h2>
     <p class="question">{{ current.question }}</p>
     <p class="timer">⏱ 剩余 {{ timeLeft }} 秒</p>
-    <input v-model="input" placeholder="输入你的回答" @keyup.enter="check" />
-    <!-- <p v-if="result === 'correct'" class="ok">✔️ 正确</p> -->
+    <input v-model="input" placeholder="输入你的回答" @keyup.enter="check" :disabled="timeLeft <= 0" />
+    <p v-if="result === 'correct'" class="ok">✔️ 正确</p>
     <p v-if="result === 'wrong'" class="err">
       ❌ 错误，正确答案：{{ current.answer }}
     </p>
-    <button @click="skip" :disabled="!input.trim()">正确</button>
+    <p v-if="timeLeft <= 0" class="err">⏰ 已超时，请填写内容</p>
+    <button @click="skip" :disabled="!input.trim() || timeLeft <= 0">提交</button>
   </div>
 </template>
 
@@ -31,6 +32,8 @@ export default {
   },
   computed: {
     current() {
+      if (!this.list || this.list.length === 0) return { question: '', answer: '' }
+      if (this.index < 0 || this.index >= this.list.length) return { question: '', answer: '' }
       return this.list[this.index]
     }
   },
@@ -45,7 +48,7 @@ export default {
     }
     this.startTimer()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.timer) clearInterval(this.timer)
   },
   methods: {
@@ -58,7 +61,9 @@ export default {
           // 标记为错误但不自动换题，避免页面自动变化
           this.result = 'wrong'
           if (!this.wrongList.includes(this.index)) this.wrongList.push(this.index)
-          this.timeLeft = 10
+          clearInterval(this.timer)
+          this.timer = null
+          this.timeLeft = 0
         }
       }, 1000)
     },
