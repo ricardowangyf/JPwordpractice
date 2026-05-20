@@ -1,8 +1,9 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
+import router from './router' // 导入路由配置
 
-Vue.config.productionTip = false
+const app = createApp(App)
 
-new Vue({
-  render: h => h(App)
-}).$mount('#app')
+app.use(router) // 使用路由插件
+
+app.mount('#app')
