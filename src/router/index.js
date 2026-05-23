@@ -1,23 +1,27 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import Vue from 'vue'
+import VueRouter from 'vue-router'
 
-// 1. 定义路由组件（也可以从其他文件导入，这里以你截图中的日语抽练为例）
-// 假设你有 Home.js 和 Practice.vue 组件
+// 1. 注册路由插件
+Vue.use(VueRouter)
+
+// 2. 定义路由
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('../views/Home.vue') // 路由懒加载
+    name: 'HomeView',
+    component: () => import('../views/HomeView.vue')
   },
   {
     path: '/practice',
     name: 'Practice',
-    component: () => import('../views/Practice.vue') // 你的日语抽练页面
+    component: () => import('../views/Practice.vue')
   }
 ]
 
-// 2. 创建 router 实例
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL), // 使用 HTML5 历史模式
+// 3. 创建 router 实例（Vue 2 的写法）
+const router = new VueRouter({
+  mode: 'history', // 在 Vue 2 中，HTML5 历史模式用 mode: 'history'
+  base: process.env.BASE_URL,
   routes
 })
 

@@ -1,9 +1,8 @@
-import { createApp } from 'vue'
+import Vue from 'vue'
 import App from './App.vue'
-import router from './router' // 导入路由配置
+import router from './router'
 
-const app = createApp(App)
-
-app.use(router) // 使用路由插件
-
-app.mount('#app')
+new Vue({
+  router, // 注入路由
+  render: h => h(App)
+}).$mount('#app')
