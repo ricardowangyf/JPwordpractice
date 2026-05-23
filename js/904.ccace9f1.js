@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkvuejpexample"]=self["webpackChunkvuejpexample"]||[]).push([[904],{6904:function(e,u,n){n.r(u),n.d(u,{default:function(){return a}});var l=function(){var e=this,u=e._self._c;return u("h1",[e._v("关于")])},t=[],r=n(1656),p={},s=(0,r.A)(p,l,t,!1,null,null,null),a=s.exports}}]);
+//# sourceMappingURL=904.ccace9f1.js.map
